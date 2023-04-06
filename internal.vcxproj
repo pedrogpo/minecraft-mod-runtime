@@ -162,12 +162,14 @@
     <ClCompile Include="src\mod\mod.cpp" />
     <ClCompile Include="src\entry.cpp" />
     <ClCompile Include="src\sdk\mapper.cpp" />
+    <ClCompile Include="src\sdk\minecraft\minecraft.cpp" />
     <ClCompile Include="src\sdk\wrapper\wrapper.cpp" />
     <ClCompile Include="src\utils\game\game.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\mod\mod.hpp" />
     <ClInclude Include="src\sdk\mapper.hpp" />
+    <ClInclude Include="src\sdk\minecraft\minecraft.hpp" />
     <ClInclude Include="src\sdk\wrapper\wrapper.hpp" />
     <ClInclude Include="src\utils\console\console.hpp" />
     <ClInclude Include="src\lib\xorstr\xorstring.h" />

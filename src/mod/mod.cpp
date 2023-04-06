@@ -1,4 +1,5 @@
 #include "mod.hpp"
+#include "../sdk/minecraft/minecraft.hpp"
 
 bool mod::c_mod::attach() {
 	const auto created_java_vms = wrapper::jni::get_created_java_vms(&this->jvm);
@@ -17,7 +18,45 @@ bool mod::c_mod::attach() {
 	return true;
 }
 
+bool mod::c_mod::get_version() {
+	// Get game handle
+	const auto game_handle = utils::game::get_game_handle();
+
+	// Get game title
+	char game_title[256];
+	GetWindowTextA(game_handle, game_title, sizeof(game_title));
+
+	// get mc version
+	const auto mc_version = [&]() -> const char* {
+		for (const auto& version : this->m_versions) {
+			if (strstr(game_title, version)) {
+				return version;
+			}
+		}
+
+		return nullptr;
+	}();
+
+	// Check if version is supported
+	if (!mc_version) {
+		log_debug("Unsupported version");
+		return false;
+	}
+
+	log_debug("Game version: %s", mc_version);
+
+	this->m_version = mc_version;
+
+	return true;
+}
+
 void mod::c_mod::initialize() {
+	// Get minecraft version
+	if (!this->get_version()) {
+		log_debug("Failed to get minecraft version");
+		return;
+	}
+	
 	// Attach to java vm
 	if (!this->attach()) {
 		log_debug("Failed to attach to java vm");
@@ -32,6 +71,8 @@ void mod::c_mod::initialize() {
 		return;
 	}
 
+	const auto minecraft_instance = std::make_shared<sdk::c_minecraft>(env);
+
 	// Wait for delete key
 	while (!GetAsyncKeyState(VK_DELETE)) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -39,6 +80,9 @@ void mod::c_mod::initialize() {
 }
 
 void mod::c_mod::shutdown() {
+	// sleep for 1s to prevent crash and show debug messages
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	
 	sdk::g_mapper->destroy();
 	this->jvm->DetachCurrentThread();
 }

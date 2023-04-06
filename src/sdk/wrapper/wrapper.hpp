@@ -13,6 +13,8 @@ namespace sdk {
 
 		jclass find_class(JNIEnv* env, const char* cls, jobject class_loader = nullptr);
 
+		std::string class_to_string(JNIEnv* env, jclass const cls);
+
 		bool exception(JNIEnv* env);
 	};
 

@@ -74,6 +74,25 @@ jclass sdk::c_wrapper::find_class(JNIEnv* env, const char* cls, jobject class_lo
 	return class_;
 }
 
+std::string sdk::c_wrapper::class_to_string(JNIEnv* env, jclass const cls) {
+	if (!cls)
+	{
+#ifdef _debug
+		log_debug(xor ("invalid class"));
+#endif
+		return "";
+	}
+	const auto cls_ = env->FindClass(xor ("java/lang/Class"));
+	const auto mid_get_name = env->GetMethodID(cls_, xor ("getName"), xor ("()Ljava/lang/String;"));
+	const auto name = reinterpret_cast<jstring>(env->CallObjectMethod(reinterpret_cast<jobject>(cls), mid_get_name));
+	const auto cls_name = env->GetStringUTFChars(name, nullptr);
+	std::string cs(cls_name);
+	env->ReleaseStringUTFChars(name, cls_name);
+	env->DeleteLocalRef(name);
+	env->DeleteLocalRef(cls_);
+	return cs;
+}
+
 bool sdk::c_wrapper::exception(JNIEnv* env) {
 #ifdef _DEBUG
 	if (env->ExceptionCheck())

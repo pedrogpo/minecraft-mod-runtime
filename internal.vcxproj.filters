@@ -25,6 +25,9 @@
     <ClCompile Include="src\includes.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="src\sdk\minecraft\minecraft.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\includes.hpp" />
@@ -37,5 +40,6 @@
     <ClInclude Include="src\utils\process\process.hpp" />
     <ClInclude Include="src\sdk\wrapper\wrapper.hpp" />
     <ClInclude Include="src\utils\string\string.hpp" />
+    <ClInclude Include="src\sdk\minecraft\minecraft.hpp" />
   </ItemGroup>
 </Project>
