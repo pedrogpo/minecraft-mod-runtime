@@ -78,7 +78,7 @@ void sdk::c_mapper::register_class(const char* name, std::vector<sdk::s_try_clas
 	log_ok(xor ("Registered class [%s] - %p"), name, cls);
 }
 
-std::shared_ptr<sdk::c_class> sdk::c_class::register_method(const char* method_name, s_method method) {
+void sdk::c_class::register_method(const char* method_name, s_method method) {
 	const auto current_version = mod::g_instance->get_minecraft_version();
 
 	std::string parameters(xor ("()"));
@@ -107,15 +107,12 @@ std::shared_ptr<sdk::c_class> sdk::c_class::register_method(const char* method_n
 
 	signature = parameters + return_type;
 
-	log_debug("Signature -> %s", signature.c_str());
-
-	// get our method id using jni
+	// get our method id
 	jmethodID mid = nullptr;
 	
 	for (const auto& try_class : method.try_list) {
 		for (const auto& mc_version : try_class.mc_version) {
 			if (strstr(current_version, mc_version)) {
-				log_debug("try_class.mtd -> %s", try_class.mtd);
 				mid = method.is_static ?
 					this->env->GetStaticMethodID(this->cls, try_class.mtd, signature.c_str()) : 
 					this->env->GetMethodID(this->cls, try_class.mtd, signature.c_str());;
@@ -130,12 +127,12 @@ std::shared_ptr<sdk::c_class> sdk::c_class::register_method(const char* method_n
 	}
 
 	if (!mid) {
-		if (strstr(current_version, xor ("1.7.10")) && method.v1_7) {
+		if (strstr(current_version, xor ("1.7.10"))) {
 			mid = method.is_static ?
 				this->env->GetStaticMethodID(this->cls, method.v1_7, signature.c_str()) :
 				this->env->GetMethodID(this->cls, method.v1_7, signature.c_str());;
 		}
-		else if (strstr(current_version, xor ("1.8.8")) || strstr(current_version, xor ("1.8.9")) && method.v1_8) {
+		else if (strstr(current_version, xor ("1.8.8")) || strstr(current_version, xor ("1.8.9"))) {
 			mid = method.is_static ?
 				this->env->GetStaticMethodID(this->cls, method.v1_8, signature.c_str()) :
 				this->env->GetMethodID(this->cls, method.v1_8, signature.c_str());;
@@ -144,20 +141,12 @@ std::shared_ptr<sdk::c_class> sdk::c_class::register_method(const char* method_n
 
 	if (!mid){
 		log_err(xor ("Failed to find method %s"), method_name);
-		return nullptr;
+		return;
 	}
 
-#ifdef _DEBUG
-	log_ok(xor ("NAME = %s | SIGNATURE = %s"), method_name, signature.c_str());
-#endif // _debug
+	log_ok(xor ("Registered method [%s] | SIGNATURE = %s - %p"), method_name, signature.c_str(), mid);
 
-	methods.insert({ method_name, mid });
-
-	// clean up
-	signature.clear();
-	signature.~basic_string();
-
-	return std::make_shared<c_class>(*this);
+	methods.insert(std::make_pair(method_name, mid));
 }
 
 std::unique_ptr<sdk::c_mapper> sdk::g_mapper;

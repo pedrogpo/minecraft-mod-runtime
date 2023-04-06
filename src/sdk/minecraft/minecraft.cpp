@@ -6,21 +6,20 @@ sdk::c_minecraft::c_minecraft(JNIEnv* env) {
 	// init mapping
 	// TODO: uncouple this from minecraft constructor
 	sdk::g_mapper->register_class(
-		("Minecraft"), // name
+		"Minecraft", // name
 		{
-			{ xor ("net.minecraft.client.Minecraft"), { xor ("1.7.10"),xor ("1.8.9")}, true}
+			{ xor ("net.minecraft.client.Minecraft"), { xor ("1.7.10"), xor ("1.8.9") }, true }
 		},
 		xor ("bao"), // 1.7.10
 		xor ("ave") // 1.8.9
 	);
 
-	const auto& minecraft_class = sdk::g_mapper->classes["Minecraft"];
+	const auto& mc_class = sdk::g_mapper->classes["Minecraft"];
 
-	minecraft_class->register_method(
-		xor ("getMinecraft"),
+	mc_class->register_method("getMinecraft",
 		{
 			{}, // parameters
-			sdk::g_wrapper->class_to_string(env, minecraft_class->get_class()), // signature
+			sdk::g_wrapper->class_to_string(env, mc_class->get_class()), // signature
 		{
 			{
 				xor("getMinecraft"),
@@ -37,8 +36,7 @@ sdk::c_minecraft::c_minecraft(JNIEnv* env) {
 		}
 	);
 
-	//this->mc_ = this->env->CallStaticObjectMethod(minecraft_class->get_class(),
-	//	sdk::g_mapper->classes["Minecraft"]->methods["getMinecraft"]);
+	this->mc_ = this->env->CallStaticObjectMethod(mc_class->get_class(), mc_class->methods["getMinecraft"]);
 }
 
 void sdk::c_minecraft::destroy() {

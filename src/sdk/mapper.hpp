@@ -58,7 +58,7 @@ namespace sdk {
 		}
 
 		// register a new method 
-		std::shared_ptr<c_class> register_method(const char* method_name, s_method method);
+		void register_method(const char* method_name, s_method method);
 
 		// get class
 		jclass get_class() { return this->cls; }
