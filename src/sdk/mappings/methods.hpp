@@ -18,29 +18,6 @@ struct s_method
     std::vector<std::pair<std::string, std::string>> vanilla_mappings;
     bool is_java, is_array = false;
 };
-//
-//const std::map<std::string, std::map<std::string, s_method>> mapping_methods = {
-//    {"Minecraft",  {
-//        {"thePlayer", {
-//            {
-//                s_try_method{"(Lnet/minecraft/entity/Entity;ZZZ)Z", {"1.8.9", "1.7.10"}},
-//                s_try_method{"(ZZ)Z", {"1.12.2"}}
-//            },
-//            {
-//                s_try_method{ "getMinecraft", {"1.8.9", "1.7.10"} },
-//                s_try_method{
-//                    "func_71410_x",
-//                    {"1.8.9", "1.8.9"}
-//                }
-//            },
-//            {
-//                {"1.7.10", "B"},
-//                {"1.8.9", "C"},
-//                {"1.12.2", "D"}
-//            }
-//        }}
-//    }}
-//};
 
 const std::map<std::string, std::map<std::string, s_method>> mappings_methods = {
 	{"AbstractClientPlayer", {

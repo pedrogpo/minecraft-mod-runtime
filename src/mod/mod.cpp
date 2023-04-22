@@ -1,6 +1,4 @@
 #include "mod.hpp"
-#include "../sdk/minecraft/minecraft.hpp"
-#include "../sdk/net/minecraft/client/Minecraft.hpp"
 #include "../sdk/abstract/fields.hpp"
 
 bool mod::c_mod::attach() {
@@ -11,7 +9,7 @@ bool mod::c_mod::attach() {
 		return false;
 	}
 
-	const auto attach_status = this->jvm->AttachCurrentThread(reinterpret_cast<void**>(&this->env), nullptr);
+	const auto attach_status = this->jvm->AttachCurrentThreadAsDaemon(reinterpret_cast<void**>(&this->env), nullptr);
 	if (attach_status != JNI_OK) {
 		log_debug("Failed to attach to java vm");
 		return false;
@@ -76,12 +74,7 @@ void mod::c_mod::initialize() {
 	const auto& mc_class = sdk::g_mapper->classes["Minecraft"];
 	const auto mc_obj = env->CallStaticObjectMethod(mc_class->get_class(), mc_class->methods["getMinecraft"]);
 	// Wait for delete key
-	const auto mc_instance = std::make_shared<sdk::net::minecraft::client::CMinecraft>(env, mc_obj);
 	while (!GetAsyncKeyState(VK_DELETE)) {
-		if (GetAsyncKeyState(VK_F8)) {
-			mc_instance->f_fullscreen() = 1;
-		}
-		std::cout << mc_instance->f_fullscreen() << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	
