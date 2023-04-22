@@ -3,35 +3,16 @@
 #include "../utils/string/string.hpp"
 #include "../utils/game/game.hpp"
 #include "wrapper/wrapper.hpp"
+#include "mappings/classes.hpp"
+#include "mappings/methods.hpp"
+
+struct compare_str {
+	bool operator()(const char* a, const char* b) const {
+		return std::strcmp(a, b) < 0;
+	}
+};
 
 namespace sdk {
-	struct s_try_class {
-		const char* cls;
-		std::vector<const char*> mc_version;
-		bool replace_slashs = false;
-	};
-
-	struct s_try_method {
-		const char* mtd;
-		std::vector<const char*> mc_version;
-	};
-
-	struct s_method
-	{
-		// method parameters
-		std::vector<std::string> params;
-		// method signature
-		std::string sig;
-		// method try list
-		std::vector<sdk::s_try_method> try_list;
-		// method name for 1.7.10
-		const char* v1_7;
-		// method name for 1.8.9
-		const char* v1_8;
-		bool is_static, is_java, is_array = false;
-	};
-
-
 	class c_class {
 	private:
 		const char* class_name;
@@ -41,7 +22,7 @@ namespace sdk {
 		JNIEnv* env;
 	public:
 		// a map of all registered methods of this class.
-		std::map<const char*, jmethodID> methods;
+		std::map<const char*, jmethodID, compare_str> methods;
 
 		// a map of all registered fields of this class.
 		std::map<const char*, jfieldID> fields;
@@ -89,10 +70,10 @@ namespace sdk {
 		}
 
 		// jclass register method
-		void register_class(const char* name, std::vector<s_try_class> try_list, const char* v1_7 = nullptr, const char* v1_8 = nullptr, bool env_classfinder = false);
+		void register_class(const char* name, std::vector<s_try_class> try_list, std::vector<s_vanilla_mapping>, bool env_classfinder = false);
 		
 		// a map of all registered classes
-		std::map<const char*, std::shared_ptr<c_class>> classes;
+		std::map<const char*, std::shared_ptr<c_class>, compare_str> classes;
 	};
 
 	extern std::unique_ptr<c_mapper> g_mapper;

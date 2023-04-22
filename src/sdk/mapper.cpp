@@ -1,4 +1,5 @@
 #include "mapper.hpp"
+#include <string_view>
 
 bool sdk::c_mapper::init() {
 	// Get classloader
@@ -7,6 +8,23 @@ bool sdk::c_mapper::init() {
 	if (!this->m_class_loader) {
 		log_debug(xor ("Failed to get class loader"));
 		return false;
+	}
+
+	for (const auto& cls : mappings_classes) {
+		this->register_class(cls.first,
+			cls.second.try_list,
+			cls.second.vanilla_mappings
+		);
+	}
+
+	for (const auto& cls : mappings_methods) {
+		const auto& mapped_cls = this->classes[cls.first.c_str()];
+		if (!mapped_cls)
+			continue;
+
+		for (const auto& method : cls.second) {
+			mapped_cls->register_method(method.first.c_str(), method.second);
+		}
 	}
 
 	this->env->ExceptionClear();
@@ -27,9 +45,14 @@ void sdk::c_mapper::destroy() {
 	@param 1_8 Classname of the 1.8.9 vanilla version
 	@return void
 */
-void sdk::c_mapper::register_class(const char* name, std::vector<sdk::s_try_class> try_list, const char* v1_7, const char* v1_8, bool env_classfinder) {
+void sdk::c_mapper::register_class(const char* name, std::vector<s_try_class> try_list, std::vector<s_vanilla_mapping> vanilla_mappings, bool env_classfinder) {
 	const auto current_version = mod::g_instance->get_minecraft_version();
-	
+
+	if (this->classes.find(name) != this->classes.end()) {
+		log_warn(xor ("Class [%s] already registered"), name);
+		return;
+	}
+
 	// Get class
 	jclass cls = env_classfinder ? env->FindClass(try_list[0].cls) : nullptr;
 
@@ -39,13 +62,10 @@ void sdk::c_mapper::register_class(const char* name, std::vector<sdk::s_try_clas
 				cls = sdk::g_wrapper->find_class(this->env, try_class.cls, this->m_class_loader);
 
 				// If the first call fails, try again with replaced slashes
-				if (!cls && try_class.replace_slashs) {
-					const auto class_name = utils::string::replace_all(try_class.cls, xor ("/"), xor ("."));
+				if (!cls) {
+					const auto class_name = utils::string::replace_all(try_class.cls, xor ("."), xor ("/"));
 					cls = sdk::g_wrapper->find_class(this->env, class_name.c_str(), this->m_class_loader);
 				}
-				
-				// Break out of the loop if the class was found
-				break;
 			}
 		}
 
@@ -55,11 +75,10 @@ void sdk::c_mapper::register_class(const char* name, std::vector<sdk::s_try_clas
 
 	// If no class was found, attempt to find a default class based on the current Minecraft version
 	if (!cls) {
-		if (strstr(current_version, xor ("1.7.10")) && v1_7) {
-			cls = sdk::g_wrapper->find_class(this->env, v1_7, this->m_class_loader);
-		}
-		else if (strstr(current_version, xor ("1.8.8")) || strstr(current_version, xor ("1.8.9")) && v1_8) {
-			cls = sdk::g_wrapper->find_class(this->env, v1_8, this->m_class_loader);
+		for (const auto& vanilla : vanilla_mappings) {
+			if (strstr(current_version, vanilla.mc_version)) {
+				cls = sdk::g_wrapper->find_class(this->env, vanilla.name, this->m_class_loader);
+			}
 		}
 	}
 
@@ -82,28 +101,53 @@ void sdk::c_class::register_method(const char* method_name, s_method method) {
 	const auto current_version = mod::g_instance->get_minecraft_version();
 
 	std::string parameters(xor ("()"));
-	std::string return_type(method.sig);
+	std::string return_type(xor(""));
 	std::string signature;
 
 	parameters.clear();
 	parameters += xor ("(");
-	for (auto& param : method.params)
-	{
-		if (param.length() > 1)
-		{
-			parameters += xor ("L");
-			std::replace(param.begin(), param.end(), '.', '/');
-			parameters += param;
-			parameters += xor (";");
-		}
-		else
-		{
-			parameters += param;
+
+	// test case
+	std::reverse(method.sig.begin(), method.sig.end());
+	
+	for (auto& sig : method.sig) {
+		if (std::find(sig.mc_version.begin(), sig.mc_version.end(), current_version) != sig.mc_version.end()) {			
+			const auto sig_params = wrapper::jni::extract_params(sig.mtd);
+			auto sig_return_type = wrapper::jni::extract_return_type(sig.mtd);
+			return_type = sig_return_type;
+
+			for (const auto& param : sig_params) {
+				if (param.length() == 1) {
+					parameters += param;
+					continue;
+				}
+				if (param.find("/minecraft") != std::string::npos) {
+					// class to str
+					const auto splitted = utils::string::explode(param, '/');
+					const auto& cls_name = splitted.back();
+					parameters += "L" + sdk::g_wrapper->class_to_string(env, g_mapper->classes[cls_name.c_str()]->cls) + ";"; // concatenation using + operator
+					continue;
+				}
+				parameters += "L" + param + ";"; // concatenation using + operator
+			}
+			
+			if (sig_return_type.find("/minecraft") != std::string::npos) {
+				// class to str
+				const auto splitted = utils::string::explode(sig_return_type, '/');
+				std::string cls_name = splitted.back();
+				cls_name.pop_back();
+					
+				const std::string array_prefix = "[";
+				const auto is_array = sig_return_type.compare(0, array_prefix.size(), array_prefix) == 0;
+
+				const auto cls_to_str = sdk::g_wrapper->class_to_string(env, g_mapper->classes[cls_name.c_str()]->cls);
+
+				return_type = utils::string::replace_all((is_array ? "[L" : "L") + cls_to_str + ";", ".", "/"); // concatenation using + operator
+			}
+			break;
 		}
 	}
 	parameters += xor (")");
-
-	return_type = method.sig.length() > 1 ? (method.is_array ? xor ("[L") : xor ("L")) + utils::string::replace_all(method.sig, ".", "/") + xor (";") : method.sig;
 
 	signature = parameters + return_type;
 
@@ -112,13 +156,12 @@ void sdk::c_class::register_method(const char* method_name, s_method method) {
 	
 	for (const auto& try_class : method.try_list) {
 		for (const auto& mc_version : try_class.mc_version) {
-			if (strstr(current_version, mc_version)) {
-				mid = method.is_static ?
-					this->env->GetStaticMethodID(this->cls, try_class.mtd, signature.c_str()) : 
-					this->env->GetMethodID(this->cls, try_class.mtd, signature.c_str());;
-
-				// Break out of the loop if the class was found
-				break;
+			if (strstr(current_version, mc_version.c_str())) {
+				mid = this->env->GetStaticMethodID(this->cls, try_class.mtd.c_str(), signature.c_str());
+				
+				if (!mid) {
+					this->env->GetMethodID(this->cls, try_class.mtd.c_str(), signature.c_str());
+				}
 			}
 		}
 
@@ -127,20 +170,18 @@ void sdk::c_class::register_method(const char* method_name, s_method method) {
 	}
 
 	if (!mid) {
-		if (strstr(current_version, xor ("1.7.10"))) {
-			mid = method.is_static ?
-				this->env->GetStaticMethodID(this->cls, method.v1_7, signature.c_str()) :
-				this->env->GetMethodID(this->cls, method.v1_7, signature.c_str());;
-		}
-		else if (strstr(current_version, xor ("1.8.8")) || strstr(current_version, xor ("1.8.9"))) {
-			mid = method.is_static ?
-				this->env->GetStaticMethodID(this->cls, method.v1_8, signature.c_str()) :
-				this->env->GetMethodID(this->cls, method.v1_8, signature.c_str());;
+		for (const auto& vanilla : method.vanilla_mappings) {
+			if (strstr(current_version, vanilla.first.c_str())) {
+				mid = this->env->GetMethodID(this->cls, vanilla.second.c_str(), signature.c_str());
+				if (!mid)
+					mid = this->env->GetStaticMethodID(this->cls, vanilla.second.c_str(), signature.c_str()); {
+				}
+			}
 		}
 	}
 
 	if (!mid){
-		log_err(xor ("Failed to find method %s"), method_name);
+		log_err(xor ("Failed to register method [%s] | SIGNATURE = %s - %p"), method_name, signature.c_str(), mid);
 		return;
 	}
 

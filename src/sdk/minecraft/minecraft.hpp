@@ -2,6 +2,12 @@
 #include "../../../includes.hpp"
 #include "../mapper.hpp"
 
+template <typename T>
+std::shared_ptr<T> create_shared() {
+	return std::make_shared<T>();
+}
+
+
 namespace sdk {
 	class c_minecraft
 	{

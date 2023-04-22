@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -75,6 +75,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)out\debug\$(platform)</OutDir>
+    <IncludePath>C:\Users\pedro\Documents\projects\internal-jni\internal\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)out\release\$(platform)</OutDir>
@@ -127,6 +128,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir)src\lib\jni\headers\;$(SolutionDir)src\lib\jni\headers\win32</AdditionalIncludeDirectories>
+      <ObjectFileName>.$(IntDir)%(RelativeDir)</ObjectFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -163,13 +165,176 @@
     <ClCompile Include="src\entry.cpp" />
     <ClCompile Include="src\sdk\mapper.cpp" />
     <ClCompile Include="src\sdk\minecraft\minecraft.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\entity\AbstractClientPlayer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\entity\EntityPlayerSP.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\gui\FontRenderer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\gui\Gui.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\gui\GuiScreen.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\gui\inventory\GuiChest.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\gui\inventory\GuiContainer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\gui\inventory\GuiInventory.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\Minecraft.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\multiplayer\PlayerControllerMP.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\multiplayer\WorldClient.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\network\NetHandlerPlayClient.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\ActiveRenderInfo.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\entity\Render.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\entity\RendererLivingEntity.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\entity\RenderItem.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\entity\RenderManager.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\IImageBuffer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\RenderItem.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\texture\ITextureObject.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\texture\TextureManager.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\renderer\ThreadDownloadImageData.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\settings\GameSettings.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\client\settings\KeyBinding.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\enchantment\Enchantment.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\enchantment\EnchantmentHelper.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\Entity.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\EntityLivingBase.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\monster\EntityMob.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\passive\EntityAnimal.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\player\EntityPlayer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\player\EntityPlayerMP.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\entity\player\InventoryPlayer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\inventory\Container.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\inventory\IInventory.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\inventory\Slot.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\EnumAction.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\Item.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemArmor.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemAxe.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemBlock.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemEgg.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemPotion.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemSnowball.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemStack.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\item\ItemSword.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\NetworkManager.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C00PacketKeepAlive.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C02PacketUseEntity.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C03PacketPlayer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C09PacketHeldItemChange.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C0APacketAnimation.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C0BPacketEntityAction.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\client\C0FPacketConfirmTransaction.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S00PacketKeepAlive.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S12PacketEntityVelocity.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S14PacketEntity.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S18PacketEntityTeleport.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S19PacketEntityHeadLook.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S27PacketExplosion.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\network\play\server\S32PacketConfirmTransaction.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\potion\Potion.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\scoreboard\ScorePlayerTeam.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\scoreboard\Team$EnumVisible.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\scoreboard\Team.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\tileentity\TileEntityChest.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\tileentity\TileEntityEnderChest.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\BlockPos.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\IChatComponent.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\math\BlockPos.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\math\Vec3i.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\MouseHelper.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\MovingObjectPosition$MovingObjectType.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\MovingObjectPosition.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\ResourceLocation.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\Timer.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\Vec3.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\util\Vec3i.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\world\IWorldNameable.cpp" />
+    <ClCompile Include="src\sdk\net\minecraft\world\World.cpp" />
     <ClCompile Include="src\sdk\wrapper\wrapper.cpp" />
     <ClCompile Include="src\utils\game\game.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\mod\mod.hpp" />
+    <ClInclude Include="src\sdk\abstract\fields.hpp" />
     <ClInclude Include="src\sdk\mapper.hpp" />
+    <ClInclude Include="src\sdk\mappings\classes.hpp" />
+    <ClInclude Include="src\sdk\mappings\methods.hpp" />
     <ClInclude Include="src\sdk\minecraft\minecraft.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\entity\AbstractClientPlayer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\entity\EntityPlayerSP.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\gui\FontRenderer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\gui\Gui.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\gui\GuiScreen.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\gui\inventory\GuiChest.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\gui\inventory\GuiContainer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\gui\inventory\GuiInventory.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\Minecraft.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\multiplayer\PlayerControllerMP.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\multiplayer\WorldClient.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\network\NetHandlerPlayClient.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\ActiveRenderInfo.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\entity\Render.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\entity\RendererLivingEntity.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\entity\RenderItem.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\entity\RenderManager.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\IImageBuffer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\RenderItem.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\texture\ITextureObject.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\texture\TextureManager.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\renderer\ThreadDownloadImageData.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\settings\GameSettings.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\client\settings\KeyBinding.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\enchantment\Enchantment.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\enchantment\EnchantmentHelper.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\Entity.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\EntityLivingBase.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\monster\EntityMob.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\passive\EntityAnimal.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\player\EntityPlayer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\player\EntityPlayerMP.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\entity\player\InventoryPlayer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\inventory\Container.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\inventory\IInventory.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\inventory\Slot.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\EnumAction.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\Item.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemArmor.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemAxe.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemBlock.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemEgg.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemPotion.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemSnowball.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemStack.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\item\ItemSword.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\NetworkManager.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C00PacketKeepAlive.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C02PacketUseEntity.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C03PacketPlayer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C09PacketHeldItemChange.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C0APacketAnimation.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C0BPacketEntityAction.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\client\C0FPacketConfirmTransaction.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S00PacketKeepAlive.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S12PacketEntityVelocity.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S14PacketEntity.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S18PacketEntityTeleport.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S19PacketEntityHeadLook.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S27PacketExplosion.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\network\play\server\S32PacketConfirmTransaction.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\potion\Potion.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\scoreboard\ScorePlayerTeam.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\scoreboard\Team$EnumVisible.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\scoreboard\Team.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\tileentity\TileEntityChest.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\tileentity\TileEntityEnderChest.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\BlockPos.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\IChatComponent.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\math\BlockPos.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\math\Vec3i.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\MouseHelper.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\MovingObjectPosition$MovingObjectType.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\MovingObjectPosition.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\ResourceLocation.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\Timer.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\Vec3.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\util\Vec3i.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\world\IWorldNameable.hpp" />
+    <ClInclude Include="src\sdk\net\minecraft\world\World.hpp" />
     <ClInclude Include="src\sdk\wrapper\wrapper.hpp" />
     <ClInclude Include="src\utils\console\console.hpp" />
     <ClInclude Include="src\lib\xorstr\xorstring.h" />

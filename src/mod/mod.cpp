@@ -1,5 +1,7 @@
 #include "mod.hpp"
 #include "../sdk/minecraft/minecraft.hpp"
+#include "../sdk/net/minecraft/client/Minecraft.hpp"
+#include "../sdk/abstract/fields.hpp"
 
 bool mod::c_mod::attach() {
 	const auto created_java_vms = wrapper::jni::get_created_java_vms(&this->jvm);
@@ -71,12 +73,19 @@ void mod::c_mod::initialize() {
 		return;
 	}
 
-	const auto minecraft_instance = std::make_shared<sdk::c_minecraft>(env);
-
+	const auto& mc_class = sdk::g_mapper->classes["Minecraft"];
+	const auto mc_obj = env->CallStaticObjectMethod(mc_class->get_class(), mc_class->methods["getMinecraft"]);
 	// Wait for delete key
+	const auto mc_instance = std::make_shared<sdk::net::minecraft::client::CMinecraft>(env, mc_obj);
 	while (!GetAsyncKeyState(VK_DELETE)) {
+		if (GetAsyncKeyState(VK_F8)) {
+			mc_instance->f_fullscreen() = 1;
+		}
+		std::cout << mc_instance->f_fullscreen() << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
+	
+	env->DeleteLocalRef(mc_obj);
 }
 
 void mod::c_mod::shutdown() {
